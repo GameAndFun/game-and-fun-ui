@@ -29,7 +29,7 @@ import { ref, defineProps, computed } from "vue";
 
 defineProps<{
   placeholder: string;
-  error: string;
+  error?: string;
 }>();
 
 const value = ref("");
