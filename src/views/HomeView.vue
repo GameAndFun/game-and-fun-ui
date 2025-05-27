@@ -1,8 +1,15 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useAuthStore } from "@/store/useAuthStore";
+import { computed } from "vue";
+
+const authStore = useAuthStore();
+
+const userInfo = computed(() => authStore.getUserInfo);
+</script>
 
 <template>
   <main class="container">
-    <h2>Welcome to Game & Fun</h2>
+    <h2>Welcome to Game & Fun {{ userInfo?.username }}</h2>
     <p class="p1">Start playing and having fun!</p>
   </main>
 </template>

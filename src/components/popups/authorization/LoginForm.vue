@@ -1,21 +1,21 @@
 <template>
   <div class="action-form">
     <div class="inputs-wrapper">
-      <AuthenticationInput placeholder="Логін">
+      <AuthenticationInput placeholder="Логін" @input="handleLogin">
         <template #icon><i class="icon-login" /> </template>
       </AuthenticationInput>
 
       <div>
-        <AuthenticationInput placeholder="Пароль">
+        <AuthenticationInput placeholder="Пароль" @input="handlePassword">
           <template #icon><i class="icon-password" /> </template>
         </AuthenticationInput>
         <p class="forgot-password">Відновити пароль</p>
       </div>
     </div>
 
-    <BaseButton class="login-button">Увійти</BaseButton>
+    <BaseButton class="login-button" @click="login">Увійти</BaseButton>
 
-    <BaseButton class="google-button">
+    <BaseButton class="google-button" @click="getUserProfile">
       <div class="google-button-content">
         <img
           class="google-icon"
@@ -26,6 +26,8 @@
         <span>Увійти з Google</span>
       </div>
     </BaseButton>
+
+    <BaseButton @click="getUsers">Users</BaseButton>
 
     <p class="text">
       Ще не маєш акаунту? Створи за хвилину та приєднуйся до нашої спільноти))
@@ -38,6 +40,62 @@
 <script setup lang="ts">
 import BaseButton from "@/components/ui/buttons/BaseButton.vue";
 import AuthenticationInput from "@/components/ui/inputs/AuthenticationInput.vue";
+import { ref } from "vue";
+import axios from "axios";
+const authData = ref({
+  username: "",
+  password: "",
+});
+
+import { useAuthStore } from "@/store/useAuthStore";
+
+const accessToken = ref("");
+const refreshToken = ref("");
+
+const login = async () => {
+  const authStore = useAuthStore();
+
+  await authStore.login(authData.value);
+
+  // const loginUrl = "http://game-and-fun.com.ua/api/auth/access-token";
+  // const response = await axios.post(loginUrl, {
+  //   password: authData.value.password,
+  //   username: authData.value.username,
+  // });
+
+  // accessToken.value = response.data.access_token;
+  // refreshToken.value = response.data.refresh_token;
+
+  // console.log("response", response);
+};
+
+const handlePassword = (value: string) => {
+  authData.value.password = value;
+};
+
+const handleLogin = (value: string) => {
+  authData.value.username = value;
+};
+
+const getUserProfile = async () => {
+  console.log("getUserProfile", accessToken.value);
+
+  const userProfileUrl = "http://game-and-fun.com.ua/api/user/profile";
+  const response = await axios.get(userProfileUrl, {
+    headers: { Authorization: accessToken.value },
+  });
+
+  console.log("response", response);
+};
+
+const getUsers = async () => {
+  const usersUrl = "http://game-and-fun.com.ua/api/admin/users";
+  const response = await axios.get(usersUrl, {
+    headers: { Authorization: accessToken.value },
+  });
+
+  console.log("response", response);
+};
 </script>
 
 <style scoped>

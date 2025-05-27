@@ -14,6 +14,7 @@
           ref="inputRef"
           @focus="isFocused = true"
           @blur="isFocused = false"
+          @input="handleInput"
         />
       </div>
     </div>
@@ -32,6 +33,10 @@ defineProps<{
   error?: string;
 }>();
 
+const emit = defineEmits<{
+  (e: "input", value: string): void;
+}>();
+
 const value = ref("");
 const isFocused = ref(false);
 const inputRef = ref<HTMLInputElement | null>(null);
@@ -41,6 +46,9 @@ const handleClick = () => {
 };
 
 const isActive = computed(() => isFocused.value || value.value !== "");
+const handleInput = () => {
+  emit("input", value.value);
+};
 </script>
 
 <style scoped>

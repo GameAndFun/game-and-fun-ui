@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import AppHeader from "@/components/app/AppHeader.vue";
 import AuthorizationPopup from "@/components/popups/AuthorizationPopup.vue";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const isAuthorizationPopupOpen = ref(false);
+
+const authStore = useAuthStore();
+
+onMounted(() => {
+  authStore.checkUserLogin();
+});
 </script>
 
 <template>
