@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { jwtDecode } from "jwt-decode";
-import axios, { AxiosError } from "axios";
+import axios, { type AxiosError } from "axios";
 import { useUserStore } from "@/store/user/useUserStore";
 import type { AuthSuccessData, AuthState } from "@/store/auth/types";
 import { API_URL, ONE_MINUTE, TOKEN_EXPIRY_TIME } from "@/store/constants";
@@ -22,7 +22,7 @@ export const useAuthStore = defineStore("auth", {
           password: credentials.password,
         });
 
-        const validation = validateAuthResponse({ status: response.status });
+        const validation = validateAuthResponse(response);
         if (!validation.success) return validation;
 
         this.setSession(response.data);
@@ -31,8 +31,7 @@ export const useAuthStore = defineStore("auth", {
 
         return { success: true, error: null };
       } catch (error) {
-        const status = (error as AxiosError)?.response?.status || 0;
-        const validation = validateAuthResponse({ status });
+        const validation = validateAuthResponse(error as AxiosError);
         return validation;
       }
     },
@@ -41,7 +40,7 @@ export const useAuthStore = defineStore("auth", {
       this.accessToken = "";
       this.accessTokenExpiry = 0;
       this.refreshToken = "";
-      useUserStore().clearUserProfile();
+      useUserStore().logout();
       localStorage.removeItem("GAF_AUTH_DATA");
     },
 

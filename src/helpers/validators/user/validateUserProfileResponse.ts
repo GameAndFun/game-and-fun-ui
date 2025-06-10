@@ -1,18 +1,17 @@
 import type { AxiosError, AxiosResponse } from "axios";
 
-export const validateAuthResponse = (response: AxiosResponse | AxiosError) => {
+export const validateUserProfileResponse = (
+  response: AxiosResponse | AxiosError
+) => {
   switch (response.status) {
     case 200:
       return { success: true, error: "" };
 
-    case 400:
-      return {
-        success: false,
-        error: "Помилка запиту. Перевірте введені дані.",
-      };
-
     case 401:
-      return { success: false, error: "Невірний логін або пароль." };
+      return { success: false, error: "Потрібно авторизуватися." };
+
+    case 403:
+      return { success: false, error: "Немає доступу до цього ресурсу." };
 
     case 500:
       return {
