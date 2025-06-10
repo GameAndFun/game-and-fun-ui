@@ -7,7 +7,7 @@ import type { UpdatedUserInfo, UserState } from "@/store/user/types";
 import { useNotificationStore } from "@/store/notification/useNotification";
 import { validateUserProfileResponse } from "@/helpers/validators/user/validateUserProfileResponse";
 
-export const useUserStore = defineStore("userProfile", {
+export const useUserProfileStore = defineStore("userProfile", {
   state: (): UserState => ({
     userProfile: null,
   }),

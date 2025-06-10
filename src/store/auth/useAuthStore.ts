@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { jwtDecode } from "jwt-decode";
 import axios, { type AxiosError } from "axios";
-import { useUserStore } from "@/store/user/useUserStore";
+import { useUserProfileStore } from "@/store/user/useUserProfileStore";
 import type { AuthSuccessData, AuthState } from "@/store/auth/types";
 import { API_URL, ONE_MINUTE, TOKEN_EXPIRY_TIME } from "@/store/constants";
 import type { AuthResult, JwtPayload, LoginData } from "@/store/auth/types";
@@ -27,7 +27,7 @@ export const useAuthStore = defineStore("auth", {
 
         this.setSession(response.data);
 
-        await useUserStore().fetchUserProfile();
+        await useUserProfileStore().fetchUserProfile();
 
         return { success: true, error: null };
       } catch (error) {
@@ -40,7 +40,7 @@ export const useAuthStore = defineStore("auth", {
       this.accessToken = "";
       this.accessTokenExpiry = 0;
       this.refreshToken = "";
-      useUserStore().logout();
+      useUserProfileStore().logout();
       localStorage.removeItem("GAF_AUTH_DATA");
     },
 
@@ -65,7 +65,7 @@ export const useAuthStore = defineStore("auth", {
       if (authDataObj && expiry > Date.now()) {
         this.accessToken = authDataObj.accessToken;
         this.accessTokenExpiry = expiry;
-        await useUserStore().fetchUserProfile();
+        await useUserProfileStore().fetchUserProfile();
       } else if (authDataObj && expiry < Date.now()) {
         this.updateSession();
       } else {
