@@ -1,13 +1,27 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import AppHeader from "@/components/app/AppHeader.vue";
-import AuthorizationPopup from "@/components/popups/AuthorizationPopup.vue";
+import { useAuthStore } from "@/store/auth/useAuthStore";
+import SideBarWrapper from "@/components/sideBar/SideBarWrapper.vue";
+import Notification from "@/components/ui/notification/Notification.vue";
 
-const isAuthorizationPopupOpen = ref(false);
+const authStore = useAuthStore();
+
+const isSideBarOpen = ref(false);
+
+onMounted(async () => {
+  authStore.restoreSession();
+  authStore.updateAccessToken(authStore.updateSession);
+});
 </script>
 
 <template>
-  <AppHeader @openAuthorizationPopup="isAuthorizationPopupOpen = true" />
+  <AppHeader @openSideBar="isSideBarOpen = true" />
+
+  <SideBarWrapper
+    :isOpen="isSideBarOpen"
+    @closeSideBar="isSideBarOpen = false"
+  />
 
   <router-view v-slot="{ Component, route }">
     <div :key="route.name">
@@ -15,10 +29,7 @@ const isAuthorizationPopupOpen = ref(false);
     </div>
   </router-view>
 
-  <AuthorizationPopup
-    :isOpen="isAuthorizationPopupOpen"
-    @closePopup="isAuthorizationPopupOpen = false"
-  />
+  <Notification message="Operation successful!" type="success" />
 </template>
 
 <style src="@/assets/styles/main.scss"></style>

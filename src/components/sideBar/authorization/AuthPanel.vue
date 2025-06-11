@@ -1,21 +1,21 @@
 <template>
-  <div :class="['authorization-popup', { active: isOpen }]">
-    <div class="popup-header">
+  <div :class="['auth-panel', { active: isOpen }]">
+    <div class="panel-header">
       <button
-        :class="['nav-button', { 'nav-active': isLogin }]"
-        @click="changeAction('login')"
+        :class="['nav-button', { 'nav-active': isLoginTab }]"
+        @click="changeTab('login')"
       >
-        <i :class="['icon-login', { 'icon-active': isLogin }]"></i>
+        <i :class="['icon-login', { 'icon-active': isLoginTab }]"></i>
 
-        <span class="button-text" v-show="isLogin">Вхід</span>
+        <span class="button-text" v-show="isLoginTab">Вхід</span>
       </button>
 
       <button
-        :class="['nav-button', { 'nav-active': !isLogin }]"
-        @click="changeAction('registration')"
+        :class="['nav-button', { 'nav-active': !isLoginTab }]"
+        @click="changeTab('registration')"
       >
-        <i :class="['icon-registration', { 'icon-active': !isLogin }]"></i>
-        <span class="button-text" v-show="!isLogin">Реїстрація</span>
+        <i :class="['icon-registration', { 'icon-active': !isLoginTab }]"></i>
+        <span class="button-text" v-show="!isLoginTab">Реїстрація</span>
       </button>
 
       <button class="close-button" @click="closePopup">
@@ -23,9 +23,14 @@
       </button>
     </div>
 
-    <div class="popup-content">
+    <div class="panel-content">
       <transition name="form-fade" mode="out-in">
-        <LoginForm v-if="isLogin" key="login" />
+        <LoginForm
+          v-if="isLoginTab"
+          key="login"
+          @closePopup="closePopup"
+          @openRegistrationPopup="changeTab('registration')"
+        />
 
         <RegistrationForm v-else key="registration" />
       </transition>
@@ -35,18 +40,19 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import LoginForm from "@/components/popups/authorization/LoginForm.vue";
-import RegistrationForm from "@/components/popups/authorization/RegistrationForm.vue";
+import LoginForm from "@/components/sideBar/authorization/LoginForm.vue";
+import RegistrationForm from "@/components/sideBar/authorization/RegistrationForm.vue";
 
-const activeAction = ref("login");
+const emit = defineEmits(["closePopup"]);
 
 defineProps<{ isOpen: boolean }>();
-const emit = defineEmits<{ (e: "closePopup"): void }>();
 
-const isLogin = computed(() => activeAction.value === "login");
+const activeTab = ref("login");
 
-const changeAction = (action: "login" | "registration") => {
-  activeAction.value = action;
+const isLoginTab = computed(() => activeTab.value === "login");
+
+const changeTab = (action: string) => {
+  activeTab.value = action;
 };
 
 const closePopup = () => {
@@ -55,7 +61,7 @@ const closePopup = () => {
 </script>
 
 <style scoped>
-.authorization-popup {
+.auth-panel {
   position: fixed;
   top: 0;
   right: 0;
@@ -72,14 +78,14 @@ const closePopup = () => {
   -webkit-backdrop-filter: blur(8px);
 }
 
-.authorization-popup.active {
+.auth-panel.active {
   transform: translateX(0);
   opacity: 1;
   pointer-events: auto;
   display: block;
 }
 
-.popup-header {
+.panel-header {
   gap: 4px;
   display: flex;
   justify-content: space-between;
@@ -140,7 +146,7 @@ const closePopup = () => {
   color: #b2b2b2;
 }
 
-.popup-content {
+.panel-content {
   padding: 24px 12px;
   display: flex;
   flex-direction: column;

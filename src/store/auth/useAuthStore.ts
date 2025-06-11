@@ -36,11 +36,13 @@ export const useAuthStore = defineStore("auth", {
       }
     },
 
-    logout() {
+    async logout() {
+      const userProfileStore = useUserProfileStore();
+
       this.accessToken = "";
       this.accessTokenExpiry = 0;
       this.refreshToken = "";
-      useUserProfileStore().logout();
+      await userProfileStore.logout();
       localStorage.removeItem("GAF_AUTH_DATA");
     },
 

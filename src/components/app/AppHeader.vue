@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import SerchInput from "@/components/ui/inputs/SerchInput.vue";
 import BurgerButton from "@/components/ui/buttons/BurgerButton.vue";
+
+const emit = defineEmits(["openSideBar"]);
 </script>
 
 <template>
   <header class="header">
-    <nav class="container header-nav">
-      <img class="logo" src="@/assets/images/app/logo.png" alt="" />
+    <nav class="header-nav container">
+      <router-link :to="{ name: 'home' }">
+        <img class="logo" src="@/assets/images/app/logo.png" alt="" />
+      </router-link>
 
       <SerchInput />
 
-      <BurgerButton @click="$emit('openAuthorizationPopup')" />
+      <BurgerButton @click="emit('openSideBar')" />
     </nav>
   </header>
 </template>
