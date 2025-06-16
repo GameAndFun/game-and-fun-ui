@@ -10,23 +10,20 @@ const emit = defineEmits(["closeSideBar"]);
 
 const userProfileStore = useUserProfileStore();
 
-const isAuthorizationPopupOpen = computed(() => {
+const isAuthPanelOpen = computed(() => {
   return props.isOpen && !userProfileStore.isUserLogin;
 });
 
-const isUserPopupOpen = computed(() => {
+const isUserPanelOpen = computed(() => {
   return props.isOpen && userProfileStore.isUserLogin;
 });
 </script>
 
 <template>
-  <AuthPanel
-    :isOpen="isAuthorizationPopupOpen"
-    @closePopup="emit('closeSideBar')"
-  />
+  <AuthPanel :isOpen="isAuthPanelOpen" @closeSideBar="emit('closeSideBar')" />
 
   <UserPanel
-    :isOpen="isUserPopupOpen"
+    :isOpen="isUserPanelOpen"
     :isAdmin="userProfileStore.isUserAdmin"
     @closeSideBar="emit('closeSideBar')"
   />

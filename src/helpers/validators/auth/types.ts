@@ -3,3 +3,7 @@ export interface LoginValidationErrors {
   password: string;
   auth?: string;
 }
+
+export interface RecoveryValidationErrors {
+  email: string;
+}

@@ -3,8 +3,9 @@
     <div class="inputs-wrapper">
       <AuthenticationInput
         placeholder="Логін*"
-        @input="enterLogin"
         :error="validationErrors.username"
+        @input="enterLogin"
+        @enter="handleLogin"
       >
         <template #icon><i class="icon-login" /></template>
       </AuthenticationInput>
@@ -13,8 +14,9 @@
         <AuthenticationInput
           placeholder="Пароль*"
           type="password"
-          @input="enterPassword"
           :error="validationErrors.password"
+          @input="enterPassword"
+          @enter="handleLogin"
         >
           <template #icon><i class="icon-password" /></template>
         </AuthenticationInput>
@@ -24,7 +26,9 @@
             {{ validationErrors.auth }}
           </span>
 
-          <p class="forgot-password">Відновити пароль</p>
+          <p class="forgot-password" @click="emit('openRecoveryForm')">
+            Відновити пароль
+          </p>
         </div>
       </div>
     </div>
@@ -39,7 +43,7 @@
 
     <BaseButton
       class="registration-button"
-      @click="emit('openRegistrationPopup')"
+      @click="emit('openRegistrationForm')"
     >
       Зареєструватися
     </BaseButton>
@@ -55,7 +59,11 @@ import type { LoginValidationErrors } from "@/helpers/validators/auth/types";
 import { validateLoginForm } from "@/helpers/validators/auth/validateLoginForm";
 import AuthenticationInput from "@/components/ui/inputs/AuthenticationInput.vue";
 
-const emit = defineEmits(["openRegistrationPopup", "closePopup"]);
+const emit = defineEmits([
+  "closeSideBar",
+  "openRecoveryForm",
+  "openRegistrationForm",
+]);
 
 const authStore = useAuthStore();
 
@@ -89,7 +97,7 @@ const handleLogin = async () => {
 
   const { success, error } = await authStore.login(credentials.value);
 
-  if (success) emit("closePopup");
+  if (success) emit("closeSideBar");
 
   if (error) validationErrors.value.auth = error;
 };

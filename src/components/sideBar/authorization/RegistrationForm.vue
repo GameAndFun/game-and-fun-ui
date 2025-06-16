@@ -28,7 +28,9 @@
         твого повернення
       </p>
 
-      <BaseButton class="login-button"> Увійти </BaseButton>
+      <BaseButton class="login-button" @click="emit('openLoginForm')">
+        Увійти
+      </BaseButton>
     </div>
   </div>
 </template>
@@ -38,6 +40,8 @@ import { ref } from "vue";
 import { useSignUpStore } from "@/store/singUp/useSingUpStore";
 import BaseButton from "@/components/ui/buttons/BaseButton.vue";
 import AuthenticationInput from "@/components/ui/inputs/AuthenticationInput.vue";
+
+const emit = defineEmits(["openLoginForm"]);
 
 const registrationData = ref({
   name: "",

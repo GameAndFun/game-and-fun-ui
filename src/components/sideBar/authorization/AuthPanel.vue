@@ -18,7 +18,7 @@
         <span class="button-text" v-show="!isLoginTab">Реїстрація</span>
       </button>
 
-      <button class="close-button" @click="closePopup">
+      <button class="close-button" @click="closeSideBar">
         <i class="icon-cross"></i>
       </button>
     </div>
@@ -26,13 +26,25 @@
     <div class="panel-content">
       <transition name="form-fade" mode="out-in">
         <LoginForm
-          v-if="isLoginTab"
+          v-if="activeTab === 'login'"
           key="login"
-          @closePopup="closePopup"
-          @openRegistrationPopup="changeTab('registration')"
+          @closeSideBar="closeSideBar"
+          @openRecoveryForm="changeTab('recovery')"
+          @openRegistrationForm="changeTab('registration')"
         />
 
-        <RegistrationForm v-else key="registration" />
+        <PasswordRecovery
+          v-else-if="activeTab === 'recovery'"
+          key="recovery"
+          @openLoginForm="changeTab('login')"
+        />
+
+        <RegistrationForm
+          v-else-if="activeTab === 'registration'"
+          key="registration"
+          @closeSideBar="closeSideBar"
+          @openLoginForm="changeTab('login')"
+        />
       </transition>
     </div>
   </div>
@@ -42,21 +54,24 @@
 import { computed, ref } from "vue";
 import LoginForm from "@/components/sideBar/authorization/LoginForm.vue";
 import RegistrationForm from "@/components/sideBar/authorization/RegistrationForm.vue";
+import PasswordRecovery from "@/components/sideBar/authorization/PasswordRecovery.vue";
 
-const emit = defineEmits(["closePopup"]);
+const emit = defineEmits(["closeSideBar"]);
 
 defineProps<{ isOpen: boolean }>();
 
 const activeTab = ref("login");
 
-const isLoginTab = computed(() => activeTab.value === "login");
+const isLoginTab = computed(
+  () => activeTab.value === "login" || activeTab.value === "recovery"
+);
 
 const changeTab = (action: string) => {
   activeTab.value = action;
 };
 
-const closePopup = () => {
-  emit("closePopup");
+const closeSideBar = () => {
+  emit("closeSideBar");
 };
 </script>
 
@@ -65,7 +80,7 @@ const closePopup = () => {
   position: fixed;
   top: 0;
   right: 0;
-  max-width: 720px;
+  max-width: 500px;
   width: 100%;
   height: 100vh;
   z-index: 10;
