@@ -13,9 +13,7 @@ export const useUserProfileStore = defineStore("userProfile", {
   }),
 
   actions: {
-    logout() {
-      const authStore = useAuthStore();
-      authStore.logout();
+    async logout() {
       this.userProfile = null;
       router.push({ name: "home" });
     },
@@ -75,6 +73,7 @@ export const useUserProfileStore = defineStore("userProfile", {
           return useNotificationStore().error(validation.error);
 
         useNotificationStore().success("Акаунт видалено успішно");
+        useAuthStore().logout();
         this.logout();
       } catch (error) {
         const validation = validateUserProfileResponse(error as AxiosError);

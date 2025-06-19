@@ -1,5 +1,5 @@
 <template>
-  <div class="authentication-input">
+  <div class="phone-input">
     <div class="input-wrapper">
       <slot name="icon" />
 
@@ -7,12 +7,13 @@
         <label :class="['label', { 'label-active': isActive }]">{{
           placeholder
         }}</label>
-        <input
+        <IMaskComponent
+          v-model="phone"
+          :mask="mask"
+          unmask="typed"
           class="input"
-          v-model="value"
-          :type="type ? type : 'text'"
+          :placeholder="inputPlaceholder"
           @blur="handleBlur"
-          @input="handleInput"
           @focus="handleFocus"
           @keydown.enter="emit('enter')"
         />
@@ -26,38 +27,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, computed, defineEmits } from "vue";
-
-defineProps<{
-  placeholder: string;
-  error?: string;
-  type?: string;
-}>();
+import { IMaskComponent } from "vue-imask";
+import { ref, defineProps, computed, defineEmits, watch } from "vue";
 
 const emit = defineEmits(["input", "blur", "focus", "enter"]);
 
-const value = ref("");
-const isFocused = ref(false);
+defineProps<{ placeholder: string; error?: string }>();
 
-const isActive = computed(() => isFocused.value || value.value !== "");
+const isFocused = ref(false);
+const phone = ref<string>("");
+const inputPlaceholder = ref<string>("");
+
+const mask = "+{38} (000) 000-00-00";
+
+const isActive = computed(() => isFocused.value || phone.value !== "");
+
+watch(phone, (newVal) => {
+  emit("input", newVal);
+});
 
 const handleBlur = () => {
   emit("blur");
   isFocused.value = false;
+  inputPlaceholder.value = "";
 };
 
 const handleFocus = () => {
   emit("focus");
   isFocused.value = true;
-};
-
-const handleInput = () => {
-  emit("input", value.value);
+  inputPlaceholder.value = "+38 (___) ___-__-__";
 };
 </script>
 
 <style scoped>
-.authentication-input {
+.phone-input {
   position: relative;
 }
 
@@ -76,7 +79,7 @@ const handleInput = () => {
   }
 }
 
-.input-wrapper .icon {
+.icon {
   width: 20px;
   height: 20px;
   flex-shrink: 0;

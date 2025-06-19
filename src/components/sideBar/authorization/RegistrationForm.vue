@@ -1,23 +1,53 @@
 <template>
   <div class="action-form">
     <h3 class="title">Загальна інформація</h3>
-
     <div class="inputs-wrapper">
-      <AuthenticationInput placeholder="Ім'я*" @input="enterName" />
+      <AuthenticationInput
+        placeholder="Ім'я*"
+        :error="validationErrors.name"
+        @input="enterName"
+        @enter="handleSignUp"
+      />
 
-      <AuthenticationInput placeholder="Прізвище*" @input="enterSurname" />
+      <AuthenticationInput
+        placeholder="Прізвище*"
+        :error="validationErrors.surname"
+        @input="enterSurname"
+        @enter="handleSignUp"
+      />
 
-      <AuthenticationInput placeholder="Телефон*" @input="enterPhone" />
+      <PhoneInput
+        placeholder="Телефон*"
+        :error="validationErrors.phone"
+        @input="enterPhone"
+        @enter="handleSignUp"
+      />
 
-      <AuthenticationInput placeholder="Email*" @input="enterEmail" />
+      <AuthenticationInput
+        placeholder="Email*"
+        :error="validationErrors.email"
+        @input="enterEmail"
+        @enter="handleSignUp"
+      />
     </div>
 
     <h3 class="title">Дані для входу</h3>
 
     <div class="inputs-wrapper">
-      <AuthenticationInput placeholder="Логін*" @input="enterUsername" />
+      <AuthenticationInput
+        placeholder="Логін*"
+        :error="validationErrors.username"
+        @input="enterUsername"
+        @enter="handleSignUp"
+      />
 
-      <AuthenticationInput placeholder="Пароль*" @input="enterPassword" />
+      <AuthenticationInput
+        type="password"
+        placeholder="Пароль*"
+        :error="validationErrors.password"
+        @input="enterPassword"
+        @enter="handleSignUp"
+      />
     </div>
 
     <div class="btns-wrap">
@@ -40,10 +70,22 @@ import { ref } from "vue";
 import { useSignUpStore } from "@/store/singUp/useSingUpStore";
 import BaseButton from "@/components/ui/buttons/BaseButton.vue";
 import AuthenticationInput from "@/components/ui/inputs/AuthenticationInput.vue";
+import type { RegistrationValidationErrors } from "@/helpers/validators/registration/types";
+import { validateRegistrationForm } from "@/helpers/validators/registration/validateRegistrationForm";
+import PhoneInput from "@/components/ui/inputs/PhoneInput.vue";
 
 const emit = defineEmits(["openLoginForm"]);
 
 const registrationData = ref({
+  name: "",
+  surname: "",
+  phone: "",
+  email: "",
+  username: "",
+  password: "",
+});
+
+const validationErrors = ref<RegistrationValidationErrors>({
   name: "",
   surname: "",
   phone: "",
@@ -76,7 +118,14 @@ const enterPassword = (value: string) => {
   registrationData.value.password = value;
 };
 
+const checkValidRegistrationData = () => {
+  validationErrors.value = validateRegistrationForm(registrationData.value);
+  return Object.values(validationErrors.value).every((error) => !error);
+};
+
 const handleSignUp = () => {
+  if (!checkValidRegistrationData()) return;
+
   const signUpStore = useSignUpStore();
   signUpStore.signUp(registrationData.value);
 };
